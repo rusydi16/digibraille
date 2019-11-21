@@ -32,6 +32,7 @@ def kembali_huruf(h, word):
 
 def huruf_besar_semua(word):
 	kata = '~~' + word
+	kata = kata.lower()
 	return kata
 
 def konversi(huruf):
