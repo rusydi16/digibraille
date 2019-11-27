@@ -3,12 +3,12 @@ import RPi.GPIO as GPIO #library GPIO
 import time #library waktu
 import string
 
-B1 = 4 #GPIO3 yang akan disambungkan ke LED
-B2 = 5
-B3 = 6
-B4 = 7
-B5 = 8
-B6 = 9
+B1 = 4 #GPIO4 Data 1
+B2 = 5 #GPIO5 Data 2
+B3 = 6 #GPIO6 CLOCK 1
+B4 = 7 #GPIO7 Latch 1
+B5 = 8 #GPIO8 Clock 2
+B6 = 9 #GPIO9 Latch 2
 
 def insert_angka(h, word):
 	if h != 0:
@@ -28,11 +28,6 @@ def insert_hurufBesar(h, word):
 
 def kembali_huruf(h, word):
 	kata = word[:h]+';'+word[h:]
-	return kata
-
-def huruf_besar_semua(word):
-	kata = '~~' + word
-	kata = kata.lower()
 	return kata
 
 def konversi(huruf):
@@ -108,6 +103,22 @@ def output(pin,con):
         GPIO.output(pin,GPIO.LOW)
     return
 
+def clock(pin_clock):
+    time.sleep(0.1)
+    GPIO.output(pin_clock,GPIO.HIGH)
+    time.sleep(0.1)
+    GPIO.output(pin_clock,GPIO.LOW)
+    
+def latch(pin_latch):
+    GPIO.output(pin_latch,GPIO.HIGH)
+    time.sleep(0.1)
+    GPIO.output(pin_latch,GPIO.LOW)
+    
+def reset(pin, pin_clock, pin_latch):
+    for x in range(6):
+        GPIO.output(pin,GPIO.LOW)
+        clock(pin_clock)
+    latch(pin_latch)
 
 # mengatur mode GPIO apakah model BOARD atau BCM
 GPIO.setmode(GPIO.BCM)
@@ -122,8 +133,6 @@ try:
     while(1):
         input_now = input("Masukkan kata: ")
         print(input_now)
-        if input_now.isupper():
-            input_now = huruf_besar_semua(input_now)
             
         h = 0
         status = 0
@@ -159,16 +168,49 @@ try:
         input_now = input_now.lower()
         print("Hasil Modifikasi Kata =", input_now)
         
-        for h in range (len(input_now)):
-            braille = konversi(input_now[h])
-            output(B1,int(braille[0]))
-            output(B2,int(braille[1]))
-            output(B3,int(braille[2]))
-            output(B4,int(braille[3]))
-            output(B5,int(braille[4]))
-            output(B6,int(braille[5]))
-            print(braille)
-            time.sleep(5)
+        i=0
+        while(i<len(input_now)):
+            if(h <= len(input_now)-1 and (input_now[i]==';' or input_now[i]=='~' or input_now[i]=='#') and input_now[i+1].isalpha()):
+                braille = konversi(input_now[i])
+                print(braille)
+                for x in range (len(braille)):
+                    output(B1,int(braille[x]))
+                    clock(B3)
+                latch(B4)
+                braille = konversi(input_now[i+1])
+                print(braille)
+                for x in range (len(braille)):
+                    output(B2,int(braille[x]))
+                    clock(B5)
+                latch(B6)
+                i = i+2
+            elif ((h <=len(input_now)-2 and input_now[h]==';' and input_now[h+1]=='~' and input_now[h+2].isalpha())):
+                braille = konversi(input_now[i])
+                print(braille)
+                for x in range (len(braille)):
+                    output(B1,int(braille[x]))
+                    clock(B3)
+                latch(B4)
+                braille = konversi(input_now[i+1])
+                print(braille)
+                for x in range (len(braille)):
+                    output(B2,int(braille[x]))
+                    clock(B5)
+                latch(B6)
+                i = i+2
+            else:
+                braille = konversi(input_now[i])
+                print(braille)
+                for x in range (len(braille)):
+                    output(B2,int(braille[x]))
+                    clock(B5)
+                latch(B6)
+                i=i+1
+            print(i)
+            time.sleep(1)
+            reset(B1,B3,B4)
+            reset(B2,B5,B6)
+            
                         
 except KeyboardInterrupt:
     GPIO.cleanup() #exit
