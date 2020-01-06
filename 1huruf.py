@@ -147,10 +147,10 @@ advertise_service( server_sock, "SampleServer",
 #                   protocols = [ OBEX_UUID ] 
                     )
                    
-print("Waiting for connection on RFCOMM channel %d" % port)
+print("Menunggu Koneksi dari RFCOMM channel %d" % port)
 
 client_sock, client_info = server_sock.accept()
-print("Accepted connection from ", client_info)
+print("Koneksi tersambung dari ", client_info)
 
 try:
     while(1):
@@ -208,7 +208,6 @@ try:
                 
                 braille = konversi(input_now[i+1])
                 print(braille)
-                print("hahaha")
                 for x in range (len(braille)):
                     output(B2,int(braille[x]))
                     clock(B5)
@@ -224,7 +223,6 @@ try:
                 
                 braille = konversi(input_now[i+1])
                 print(braille)
-                print("huhihi")
                 for x in range (len(braille)):
                     output(B2,int(braille[x]))
                     clock(B5)
