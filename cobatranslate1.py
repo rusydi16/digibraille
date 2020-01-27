@@ -160,22 +160,14 @@ try:
         i = 0
         while i < len(input_now):
             if ((input_now[i] == ';' or input_now[i] == '~' or input_now[i] == '#') and i <= len(input_now) - 1 and
-                    input_now[i + 1].isalpha()):
+                    input_now[i + 1].isprintable()):
                 braille = konversi(input_now[i])
                 print("bit1=", braille)
 
                 braille = konversi(input_now[i + 1])
                 print("bit2=", braille)
                 i = i + 2
-            elif i <= (len(input_now) - 2) and input_now[i] == ';' and input_now[i + 1] == '~' and (
-                    input_now[i + 1].isalpha()):
-                braille = konversi(input_now[i])
-                print("bit1=", braille)
-
-                braille = konversi(input_now[i + 1])
-                print("bit2=", braille)
-
-                i = i + 2
+                print('hoho')
             elif i <= (len(input_now) - 2) and input_now[i] == '"' and (
                     input_now[i - 1] == ' ' or i == 0 or input_now[i + 1] in string.printable):
                 braille = '011001'
